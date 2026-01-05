@@ -50,3 +50,8 @@ dev = [
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["mlready*"]
+
+[project.urls]
+Homepage = "https://github.com/vetrivel07/mlready"
+Repository = "https://github.com/vetrivel07/mlready"
+Issues = "https://github.com/vetrivel07/mlready/issues"
