@@ -215,7 +215,7 @@ Not intended to replace:
 
 ## Project Status
 
-* Version: **0.2.0**
+* Version: **0.2.1**
 * Stable core API
 * Tests included
 * Ready for production pipelines (safe mode)
