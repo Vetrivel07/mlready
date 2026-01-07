@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mlready"
-version = "0.1.0"
+version = "0.2.0"
 description = "ML readiness auditor for tabular data with safe normalization and reproducible cleaning recipes"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -43,9 +43,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
-    "pytest>=7.0"
-]
+dev = ["pytest>=7.0"]
+report = ["scikit-learn>=1.2"]
+viz = ["matplotlib>=3.7"]
+full = ["scikit-learn>=1.2", "matplotlib>=3.7"]
 
 [tool.setuptools.packages.find]
 where = ["."]

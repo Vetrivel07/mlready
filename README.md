@@ -10,11 +10,28 @@ It focuses on **observation → risk detection → safe normalization**, not agg
 
 Real-world datasets fail ML pipelines because of:
 
+Your current list is **good but incomplete** for real-world ML failures.
+You should add only **failure modes that `mlready` actually addresses**. No marketing fluff.
+
+Add **exactly these**. Nothing more.
+
+---
+
+## Why mlready?
+
+Real-world datasets fail ML pipelines because of:
+
 * numeric values stored as strings (`"$1,200"`, `"1.2M"`)
 * inconsistent booleans (`Yes / no / YES / n`)
 * datetime columns stored as text
+* mixed types within the same column
+* silent missing values (`""`, `"NA"`, `"null"`, `"?"`)
+* zero-variance and near-constant columns
+* high-cardinality categorical fields
+* ID-like columns that leak information
 * unseen categories between train and test
-* silent data leakage and ID-like columns
+* silent target leakage via derived or proxy columns
+* schema drift between training and inference data
 
 `mlready` helps you **detect these issues early and fix only what is safe**.
 
@@ -22,13 +39,29 @@ Real-world datasets fail ML pipelines because of:
 
 ## Installation
 
+Base install (data readiness utilities):
+
 ```bash
 pip install mlready
+````
+
+Model reporting (metrics, curves, no plots):
+
+```bash
+pip install "mlready[report]"
+```
+
+Model reporting with visualizations:
+
+```bash
+pip install "mlready[report,viz]"
+# or
+pip install "mlready[full]"
 ```
 
 ---
 
-## Core API (3 functions)
+## Core API (4 functions)
 
 ### 1️⃣ `profile(df)`
 
@@ -103,32 +136,54 @@ clean_df, recipe, report = mr.apply(df)
 
 All actions are recorded in a **reproducible recipe**.
 
+Got it. You want **symmetry**, not examples, and **no model-specific implication**.
+
+Below is the **correct, precise, non-misleading** way to add `report()` in the **same style** as your other APIs.
+
+You can paste this directly into your README.
+
 ---
 
-## Example
+### 4️⃣ `report(model, X_train, X_test, y_train, y_test, ...)`
 
-```python
-import pandas as pd
-import mlready as mr
+**Purpose:** Evaluate classification models in a structured, pipeline-safe way.
 
-df = pd.DataFrame({
-    "Price": ["$1,200", "1.2M"],
-    "Membership": ["Yes", "no"],
-})
+**What it provides:**
 
-clean, recipe, report = mr.apply(df)
+* train and test classification reports
+* summary metrics:
 
-print(clean)
-print(report)
-```
+  * accuracy
+  * balanced accuracy
+  * precision / recall / F1 (macro, weighted)
+* confusion matrix (data + optional plot)
+* feature importance (when supported by the model)
+* confidence analysis (probability distributions, when available)
+* error analysis:
 
-Output:
+  * top misclassified rows with confidence scores
+* model performance curves (optional):
 
-```text
-       Price  Membership
-0     1200.0        True
-1  1200000.0       False
-```
+  * ROC and Precision–Recall (binary)
+  * calibration curve (probability-based models)
+  * macro One-vs-Rest ROC-AUC (multiclass)
+  * optional per-class OvR ROC curves (multiclass)
+
+**Model support scope:**
+
+* designed for **sklearn-compatible classifiers**
+* requires `predict()`
+* uses `predict_proba()` and/or `decision_function()` when available
+* supports tree-based, linear, kernel-based, and sklearn-wrapped models
+
+**What it does NOT support:**
+
+* regression models
+* clustering / anomaly detection
+* multilabel (multi-hot) classification
+* raw deep-learning models without sklearn-style APIs
+
+Optional dependencies are required for reporting and visualization.
 
 ---
 
@@ -160,7 +215,7 @@ Not intended to replace:
 
 ## Project Status
 
-* Version: **0.1.0**
+* Version: **0.2.0**
 * Stable core API
 * Tests included
 * Ready for production pipelines (safe mode)
